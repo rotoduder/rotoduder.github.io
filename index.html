@@ -45,7 +45,7 @@ function render(){
     var now = (new Date).getTime();
     var elapsed = now-startTime;
     
-    var scale = 0.5+elapsed*0.0005;
+    var scale = 0.5+elapsed*0.001;
     if(scale < 20){
         c.clearRect(0,0,w,h);
     }
