@@ -1,0 +1,102 @@
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rotoduder</title>
+<style>
+body {
+margin: 0;
+}
+
+</style>
+</head>
+<body>
+<canvas id="canv"></canvas>
+
+<script>
+var backgroundImg = new Image;
+backgroundImg.src = "original.jpg";
+
+var stepImg = new Image;
+stepImg.src = "step2.png";
+
+
+
+var w,h,canvDom,c,w2,h2;
+
+function onResize(){
+canvDom = document.getElementById("canv");
+w = canvDom.width = window.innerWidth;
+h = canvDom.height = window.innerHeight;
+w2 = w/2;
+h2 = h/2;
+}
+window.addEventListener("resize", onResize);
+onResize();
+
+c = canvDom.getContext("2d");
+
+var startTime = (new Date).getTime();
+var gotoX = 0.71;
+var gotoY = 0.57;
+
+var lastScalePrint = 0;
+function render(){
+    var now = (new Date).getTime();
+    var elapsed = now-startTime;
+    
+    var scale = 0.5+elapsed*0.0005;
+    if(scale < 20){
+        c.clearRect(0,0,w,h);
+    }
+    
+    c.save();
+    c.translate(w2, h2);
+    
+    
+    if(now-lastScalePrint > 1000){
+        lastScalePrint = now;
+        console.log(scale);
+    }
+    
+    c.scale(Math.pow(2, scale), Math.pow(2, scale));
+    
+    if(scale < 9){
+        c.drawImage(backgroundImg, -140*gotoX, -100*gotoY, 150, 100);
+    }
+    
+    var drawScale = Math.pow(2, scale);
+    var stepScale = 0.36;
+    var stepRotate = 0.08;
+    for(var i = 0; i<400; i++){
+        if(i > 10){
+            if(i&1) c.rotate(stepRotate);
+            else c.rotate(-stepRotate);
+        }
+        c.scale(-1, 1);
+        
+        c.scale(stepScale, stepScale);
+        drawScale *= stepScale;
+        var relativeScale = drawScale;
+        
+        
+        
+        if(relativeScale < 100){
+            //console.log(i+"rel:"+relativeScale);
+            c.drawImage(stepImg, -140*gotoX, -100*gotoY, 150, 100);
+        }
+        
+        if(relativeScale < 0.05){
+            break;
+        }
+    }
+    
+
+    c.restore();
+    window.requestAnimationFrame(render);
+}
+window.requestAnimationFrame(render);
+
+</script>
+</body>
+</html>
